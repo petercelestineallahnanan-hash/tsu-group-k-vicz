@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departmental Notice Board - TSU Jalingo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root { --tsu-navy: #000080; --tsu-gold: #FFD700; --tsu-sky: #87CEEB; }
+        .bg-tsu-navy { background-color: var(--tsu-navy); }
+        .bg-tsu-gold { background-color: var(--tsu-gold); }
+        .text-tsu-navy { color: var(--tsu-navy); }
+        .border-tsu-gold { border-color: var(--tsu-gold); }
+        /* Logo sizing */
+        .tsu-logo-long { width: 100%; max-width: 600px; height: auto; border-radius: 8px; }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen font-sans">
+
+    <header class="bg-tsu-navy text-white p-6 shadow-xl border-b-4 border-tsu-gold text-center">
+        <div class="container mx-auto flex flex-col items-center">
+            <img src="https://i.ibb.co/VpByS9m/TSU-LOGO.jpg" alt="TSU Jalingo Logo" class="tsu-logo-long mb-4 bg-white p-2 shadow-lg">
+            <h1 class="font-bold text-xl md:text-3xl uppercase tracking-wider">Taraba State University Jalingo</h1>
+            <p class="text-tsu-sky font-bold text-sm mt-1 uppercase tracking-widest italic">Departmental Notice Board</p>
+        </div>
+    </header>
+
+    <div id="auth-section" class="container mx-auto px-4 py-10 flex justify-center">
+        <div class="bg-white w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+            <div class="flex border-b">
+                <button onclick="setTab('login')" id="tab-login" class="w-1/2 py-4 font-black bg-tsu-navy text-white transition-all">LOGIN</button>
+                <button onclick="setTab('reg')" id="tab-reg" class="w-1/2 py-4 font-black bg-gray-100 text-gray-500 transition-all">REGISTER</button>
+            </div>
+
+            <div class="p-8">
+                <div id="auth-error" class="hidden mb-4 p-3 bg-red-100 text-red-700 text-xs rounded-lg border border-red-200 font-bold text-center"></div>
+                
+                <form id="auth-form" onsubmit="handleAuth(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-tsu-navy mb-1 uppercase">Your Department</label>
+                        <select id="user-dept" required class="w-full p-3 border-2 rounded-xl bg-white outline-none focus:border-tsu-navy font-semibold">
+                            <option value="">-- Choose Department --</option>
+                            <optgroup label="Agriculture">
+                                <option>Agronomy</option>
+                                <option>Animal Science</option>
+                            </optgroup>
+                            <optgroup label="Arts & Social Sciences">
+                                <option>Mass Communication</option>
+                                <option>Economics</option>
+                                <option>Political Science</option>
+                                <option>Sociology</option>
+                                <option>Accounting</option>
+                            </optgroup>
+                            <optgroup label="Education">
+                                <option>Educational Foundations</option>
+                                <option>Science Education</option>
+                            </optgroup>
+                            <optgroup label="Engineering">
+                                <option>Civil Engineering</option>
+                                <option>Mechanical Engineering</option>
+                                <option>Electrical Engineering</option>
+                            </optgroup>
+                            <optgroup label="Science">
+                                <option>Computer Science</option>
+                                <option>Mathematical Sciences</option>
+                                <option>Biological Sciences</option>
+                                <option>Chemistry</option>
+                                <option>Physics</option>
+                            </optgroup>
+                            <optgroup label="Others">
+                                <option>Law</option>
+                                <option>Nursing Science</option>
+                            </optgroup>
+                        </select>
+                    </div>
+
+                    <input type="text" id="id-number" placeholder="Matric No / Staff ID" required class="w-full p-3 border-2 rounded-xl outline-none focus:border-tsu-navy">
+                    <input type="password" id="password" placeholder="Password" required class="w-full p-3 border-2 rounded-xl outline-none focus:border-tsu-navy">
+                    
+                    <div id="reg-fields" class="hidden space-y-4">
+                        <input type="text" id="fullname" placeholder="Full Name (Surname First)" class="w-full p-3 border-2 rounded-xl outline-none focus:border-tsu-navy">
+                        <div class="flex items-center space-x-2 p-3 bg-blue-50 rounded-xl border-2 border-dashed border-tsu-sky">
+                            <input type="checkbox" id="is-admin" class="w-4 h-4">
+                            <label for="is-admin" class="text-xs font-bold text-tsu-navy">Register as Dept Admin (Limit 5 per Dept)</label>
+                        </div>
+                    </div>
+
+                    <button id="auth-btn" class="w-full bg-tsu-navy text-white font-black py-4 rounded-xl shadow-lg uppercase tracking-widest active:scale-95 transition-all">Enter Portal</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <main id="dashboard" class="container mx-auto px-4 py-8 hidden">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+            <div>
+                <h2 id="dept-heading" class="text-tsu-navy font-black text-2xl uppercase border-b-4 border-tsu-gold inline-block leading-tight"></h2>
+                <p id="welcome-msg" class="text-gray-500 text-sm font-bold uppercase tracking-tighter mt-1"></p>
+            </div>
+            <button onclick="location.reload()" class="bg-red-600 text-white px-6 py-2 rounded-full font-bold text-xs shadow-md hover:bg-red-700">LOGOUT</button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div id="admin-panel" class="hidden lg:col-span-1 bg-white p-6 rounded-2xl shadow-xl border-t-8 border-tsu-gold h-fit">
+                <h3 class="font-black text-tsu-navy mb-4 uppercase text-xs">Admin Notice Board</h3>
+                <form onsubmit="postNotice(event)" class="space-y-4">
+                    <input type="text" id="post-title" placeholder="Notice Subject" required class="w-full p-3 border-2 rounded-lg text-sm outline-none focus:border-tsu-navy">
+                    <textarea id="post-body" placeholder="Information for students..." required class="w-full p-3 border-2 rounded-lg h-32 text-sm outline-none focus:border-tsu-navy"></textarea>
+                    <button class="w-full bg-tsu-navy text-white py-3 rounded-xl font-bold uppercase text-xs shadow-lg">Broadcast to Department</button>
+                </form>
+            </div>
+
+            <div id="feed" class="lg:col-span-2 space-y-4">
+                <div class="bg-white p-4 rounded-xl shadow-md border-l-8 border-tsu-gold font-black text-tsu-navy uppercase text-sm">
+                    Recent Departmental Information
+                </div>
+                <div id="notice-list" class="space-y-4">
+                    </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        let mode = 'login';
+        let users = JSON.parse(localStorage.getItem('tsu_users_db')) || [];
+        let notices = JSON.parse(localStorage.getItem('tsu_notices_db')) || [];
+        let activeUser = null;
+
+        function setTab(t) {
+            mode = t;
+            document.getElementById('reg-fields').classList.toggle('hidden', t === 'login');
+            document.getElementById('auth-btn').innerText = t === 'login' ? 'Secure Login' : 'Complete Registration';
+            document.getElementById('tab-login').className = t === 'login' ? "w-1/2 py-4 font-black bg-tsu-navy text-white" : "w-1/2 py-4 font-black bg-gray-100 text-gray-500";
+            document.getElementById('tab-reg').className = t === 'reg' ? "w-1/2 py-4 font-black bg-tsu-navy text-white" : "w-1/2 py-4 font-black bg-gray-100 text-gray-500";
+        }
+
+        function handleAuth(e) {
+            e.preventDefault();
+            const id = document.getElementById('id-number').value.trim();
+            const pw = document.getElementById('password').value;
+            const dept = document.getElementById('user-dept').value;
+            const err = document.getElementById('auth-error');
+
+            if (mode === 'reg') {
+                const isAdmin = document.getElementById('is-admin').checked;
+                // Requirement 1 & 12: Limit 5 admins PER department
+                const deptAdmins = users.filter(u => u.dept === dept && u.role === 'admin').length;
+
+                if (isAdmin && deptAdmins >= 5) {
+                    err.innerText = `ADMIN LIMIT: ${dept} already has 5 admins registered.`;
+                    err.classList.remove('hidden');
+                    return;
+                }
+
+                if (users.find(u => u.id === id)) {
+                    err.innerText = "ALREADY REGISTERED: Please use the Login tab.";
+                    err.classList.remove('hidden');
+                    return;
+                }
+
+                users.push({ id, pw, dept, name: document.getElementById('fullname').value, role: isAdmin ? 'admin' : 'student' });
+                localStorage.setItem('tsu_users_db', JSON.stringify(users));
+                alert("Registration successful! You can now Login.");
+                setTab('login');
+            } else {
+                // Requirement 7, 14: Only exact registered data allows login
+                const user = users.find(u => u.id === id && u.pw === pw && u.dept === dept);
+                if (user) {
+                    activeUser = user;
+                    launchDashboard();
+                } else {
+                    err.innerText = "ACCESS DENIED: No matching record found in the register.";
+                    err.classList.remove('hidden');
+                }
+            }
+        }
+
+        function launchDashboard() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('dashboard').classList.remove('hidden');
+            document.getElementById('dept-heading').innerText = activeUser.dept;
+            document.getElementById('welcome-msg').innerText = `${activeUser.name} | ACCESS: ${activeUser.role}`;
+            
+            // Requirement 2: Only Admin can post messages
+            if (activeUser.role === 'admin') document.getElementById('admin-panel').classList.remove('hidden');
+            renderNotices();
+        }
+
+        function postNotice(e) {
+            e.preventDefault();
+            const title = document.getElementById('post-title').value;
+            const body = document.getElementById('post-body').value;
+            
+            notices.unshift({ title, body, dept: activeUser.dept, time: new Date().toLocaleString() });
+            localStorage.setItem('tsu_notices_db', JSON.stringify(notices));
+            renderNotices();
+            e.target.reset();
+        }
+
+        function renderNotices() {
+            const list = document.getElementById('notice-list');
+            // Requirement 8: Information viewed ONLY by people in the register for that specific dept
+            const deptNotices = notices.filter(n => n.dept === activeUser.dept);
+            
+            if (deptNotices.length === 0) {
+                list.innerHTML = `<div class="p-10 text-center text-gray-400 italic bg-white rounded-xl shadow-inner">No official notices posted for ${activeUser.dept} yet.</div>`;
+                return;
+            }
+            list.innerHTML = deptNotices.map(n => `
+                <div class="bg-white p-6 rounded-2xl shadow-md border-l-8 border-tsu-navy transition-transform hover:scale-[1.01]">
+                    <div class="flex justify-between items-center mb-3">
+                        <span class="text-[10px] font-black bg-tsu-navy text-white px-3 py-1 rounded-full uppercase tracking-tighter">Official Post</span>
+                        <span class="text-[10px] text-gray-400 font-bold">${n.time}</span>
+                    </div>
+                    <h4 class="font-black text-gray-800 uppercase text-md mb-2 border-b-2 border-gray-100 pb-1">${n.title}</h4>
+                    <p class="text-sm text-gray-600 leading-relaxed">${n.body}</p>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
+
