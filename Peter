@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TSU Jalingo - Departmental Notice Board</title>
+    <style>
+        :root {
+            --tsu-green: #006400;
+            --tsu-gold: #FFD700;
+            --tsu-light: #f4f7f6;
+            --text-dark: #2c3e50;
+            --danger: #e74c3c;
+            --success: #27ae60;
+            --warning: #f39c12;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--tsu-light);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        /* Header & Branding */
+        .header {
+            background: linear-gradient(135deg, var(--tsu-green) 0%, #004d00 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .logo-container {
+            margin-bottom: 10px;
+        }
+
+        .logo-container img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 3px solid var(--tsu-gold);
+            background: white;
+            object-fit: contain;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            margin: 5px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: var(--tsu-gold);
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            margin-bottom: 20px;
+            border-top: 4px solid var(--tsu-gold);
+        }
+
+        h2 {
+            color: var(--tsu-green);
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        /* Forms */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--tsu-green);
+        }
+
+        .hint {
+            font-size: 0.8rem;
+            color: #777;
+            margin-top: 5px;
+        }
+
+        .error-text {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+            background-color: #fdf2f2;
+        }
+
+        button.btn {
+            background-color: var(--tsu-green);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: background 0.3s;
+            width: 100%;
+        }
+
+        button.btn:hover {
+            background-color: #004d00;
+        }
+
+        button.btn-secondary {
+            background-color: #95a5a6;
+        }
+
+        button.btn-danger {
+            background-color: var(--danger);
+        }
+
+        button.btn-warning {
+            background-color: var(--warning);
+            color: #333;
+        }
+
+        .link-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #666;
+        }
+
+        .link-text a {
+            color: var(--tsu-green);
+            cursor: pointer;
+            text-decoration: underline;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .alert-error {
+            background-color: #fee;
+            color: var(--danger);
+            border: 1px solid #fcc;
+        }
+
+        .alert-success {
+            background-color: #efe;
+            color: var(--success);
+            border: 1px solid #cfc;
+        }
+
+        .alert-info {
+            background-color: #e3f2fd;
+            color: #1976d2;
+            border: 1px solid #bbdefb;
+        }
+
+        /* Dashboard Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 20px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+
+        .user-profile {
+            text-align: center;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 20px;
+        }
+
+        .avatar {
+            width: 60px;
+            height: 60px;
+            background: var(--tsu-green);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin: 0 auto 10px;
+        }
+
+        .menu-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: var(--tsu-light);
+            color: var(--tsu-green);
+            font-weight: 600;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: 8px;
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        /* Notices */
+        .notice-card {
+            border-left: 4px solid var(--tsu-gold);
+            background: #f9f9f9;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 0 4px 4px 0;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .notice-title {
+            font-weight: bold;
+            color: var(--tsu-green);
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            background: var(--tsu-green);
+            color: white;
+        }
+
+        .badge-global {
+            background: var(--tsu-gold);
+            color: #333;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--tsu-light);
+            color: var(--tsu-green);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        /* Messages */
+        .chat-container {
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .chat-list {
+            width: 100%;
+            border-bottom: 1px solid #ddd;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #f9f9f9;
+        }
+
+        .chat-user {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+
+        .chat-user:hover, .chat-user.active {
+            background: white;
+            color: var(--tsu-green);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: white;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 80%;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .message.sent {
+            background: var(--tsu-green);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+
+        .message.received {
+            background: #f1f1f1;
+            color: #333;
+            border-bottom-left-radius: 2px;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            background: #f9f9f9;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .visible {
+            display: block !important;
+        }
+
+        /* Special styling for General Admin availability */
+        .admin-available {
+            background-color: #e8f5e9;
+            border: 2px solid var(--success);
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            color: var(--tsu-green);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                order: 2;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="https://kimi-web-img.moonshot.cn/img/157.245.246.225/89c314be7ecaa8ba55643656b1e7e22ab7a6b7eb.png" alt="TSU Logo">
+        </div>
+        <h1>Taraba State University</h1>
+        <p>Departmental Electronic Notice Board System</p>
+    </div>
+
+    <!-- Auth Views -->
+    <div id="auth-section" class="container">
+        
+        <!-- Login View -->
+        <div id="login-view" class="card" style="max-width: 500px; margin: 40px auto;">
+            <h2>Login to Notice Board</h2>
+            <div id="login-alert" class="alert alert-error"></div>
+            <form id="login-form">
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="login-username" required placeholder="Enter username">
+                </div>
+                <div class="form-group">
+                    <label>JAMB Registration Number</label>
+                    <input type="password" id="login-password" required placeholder="Enter JAMB Number">
+                    <div class="hint">Enter your JAMB registration number (e.g., 123456789012AB)</div>
+                </div>
+                <button type="submit" class="btn">Login</button>
+                <div class="link-text">
+                    Don't have an account? <a onclick="showView('register')">Register here</a>
+                </div>
+            </form>
+        </div>
+
+        <!-- Register View -->
+        <div id="register-view" class="card hidden" style="max-width: 600px; margin: 40px auto;">
+            <h2>Create Account</h2>
+            <div id="register-alert" class="alert alert-error"></div>
+            
+            <!-- General Admin Availability Notice -->
+            <div id="gen-admin-notice" class="alert alert-info" style="margin-bottom: 15px;">
+                <strong>Available:</strong> General Admin position is open! Register now to become the system administrator.
+            </div>
+
+            <form id="register-form">
+                <div class="form-group">
+                    <label>Account Type</label>
+                    <select id="reg-role" onchange="handleRoleChange()">
+                        <option value="student">Student</option>
+                        <option value="dept-admin">Department Admin</option>
+                        <option value="general-admin" id="general-admin-option">General Admin</option>
+                    </select>
+                    <div id="admin-availability-msg" class="admin-available hidden">
+                        🌟 GENERAL ADMIN POSITION IS AVAILABLE! Select "General Admin" above to register.
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Matric Number (Format: TSU/FSC/CS/00/0000)</label>
+                    <input type="text" id="reg-matric" required placeholder="TSU/FSC/CS/00/0000">
+                    <div class="hint">Must follow exact format: TSU/XXX/XX/00/0000</div>
+                    <div class="error-text" id="matric-error">Invalid matric number format. Use: TSU/FSC/CS/00/0000</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Username</label>
+                    <input type="text" id="reg-username" required placeholder="Choose a username">
+                </div>
+
+                <div class="form-group">
+                    <label>JAMB Registration Number</label>
+                    <input type="text" id="reg-password" required placeholder="JAMB Number" minlength="10" maxlength="14">
+                    <div class="hint">Your JAMB registration number (10-14 digits)</div>
+                    <div class="error-text" id="password-error">JAMB number must be between 10-14 digits</div>
+                </div>
+
+                <div class="form-group">
+                    <label>Department</label>
+                    <select id="reg-dept">
+                        <option value="Computer Science">Computer Science (FSC)</option>
+                        <option value="Mathematics">Mathematics (FSC)</option>
+                        <option value="Physics">Physics (FSC)</option>
+                        <option value="Chemistry">Chemistry (FSC)</option>
+                        <option value="Biology">Biology (FSC)</option>
+                        <option value="Accounting">Accounting (FSS)</option>
+                        <option value="Business Admin">Business Administration (FSS)</option>
+                        <option value="Economics">Economics (FSS)</option>
+                        <option value="Political Science">Political Science (FSS)</option>
+                        <option value="Sociology">Sociology (FSS)</option>
+                        <option value="Law">Law (FLAW)</option>
+                        <option value="Medicine">Medicine (FMS)</option>
+                        <option value="Nursing">Nursing (FHS)</option>
+                        <option value="Agriculture">Agriculture (FAG)</option>
+                        <option value="Education">Education (FED)</option>
+                        <option value="Engineering">Engineering (FENG)</option>
+                        <option value="Arts">Arts (FA)</option>
+                    </select>
+                </div>
+
+                <button type="submit" class="btn">Register</button>
+                <div class="link-text">
+                    Already have an account? <a onclick="showView('login')">Login here</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboard-section" class="container hidden">
+        <div class="dashboard-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <div class="user-profile">
+                    <div class="avatar" id="user-avatar">U</div>
+                    <div id="user-name" style="font-weight: bold;">User Name</div>
+                    <div id="user-role" style="font-size: 0.8rem; color: #666;">Role</div>
+                    <div id="user-dept" style="font-size: 0.8rem; color: var(--tsu-green); font-weight: 600;">Dept</div>
+                </div>
+
+                <div class="menu">
+                    <div class="menu-item active" onclick="showDashboardTab('notices')">
+                        <span>📋</span> Notices
+                    </div>
+                    <div class="menu-item" onclick="showDashboardTab('messages')">
+                        <span>✉️</span> Messages
+                    </div>
+                    <div class="menu-item hidden" id="menu-users" onclick="showDashboardTab('users')">
+                        <span>👥</span> Manage Users
+                    </div>
+                    <div class="menu-item hidden" id="menu-settings" onclick="showDashboardTab('settings')">
+                        <span>⚙️</span> Settings
+                    </div>
+                    <div class="menu-item" onclick="logout()">
+                        <span>🚪</span> Logout
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="main-content">
+                
+                <!-- Notices Tab -->
+                <div id="tab-notices">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h2>Departmental Notices</h2>
+                        <button class="btn" style="width: auto; display: none;" id="btn-post-notice" onclick="openPostModal()">+ Post Notice</button>
+                    </div>
+                    
+                    <div id="notices-container">
+                        <!-- Notices injected here -->
+                    </div>
+                </div>
+
+                <!-- Messages Tab -->
+                <div id="tab-messages" class="hidden">
+                    <h2>Direct Messages</h2>
+                    <div class="chat-container">
+                        <div class="chat-list" id="chat-user-list">
+                            <!-- User list -->
+                        </div>
+                        <div class="chat-messages" id="chat-messages-area">
+                            <div style="text-align: center; color: #999; margin-top: 50px;">Select a user to start messaging</div>
+                        </div>
+                        <div class="chat-input hidden" id="chat-input-area">
+                            <input type="text" id="msg-input" placeholder="Type message...">
+                            <button class="btn" style="width: auto;" onclick="sendMessage()">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Users Tab (General Admin Only) -->
+                <div id="tab-users" class="hidden">
+                    <h2>User Management</h2>
+                    <p style="margin-bottom: 15px; color: #666;">As General Admin, you can view and remove users from the system.</p>
+                    <div style="overflow-x: auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Matric No</th>
+                                    <th>Username</th>
+                                    <th>Role</th>
+                                    <th>Department</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users-table-body">
+                                <!-- Users injected here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Settings Tab (Admin Transfer) -->
+                <div id="tab-settings" class="hidden">
+                    <h2>Admin Settings</h2>
+                    
+                    <div class="card" style="border-left-color: var(--danger);">
+                        <h3 style="color:
